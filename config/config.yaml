@@ -1,0 +1,8 @@
+llm:
+  openai:
+    provider: "openai"
+    model_name: "gpt-5-mini"
+    reasoning_effort: "medium"
+  groq:
+    provider: "groq"
+    model_name: "openai/gpt-oss-120b"

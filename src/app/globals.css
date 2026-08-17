@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+  }
+
+  * {
+    @apply border-slate-200;
+  }
+
+  body {
+    @apply bg-offwhite-50 text-navy-900 antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .chat-bubble-user {
+    @apply bg-navy-900 text-white rounded-2xl rounded-tr-md px-4 py-2.5 max-w-[75%] ml-auto;
+  }
+
+  .chat-bubble-ai {
+    @apply bg-slate-100 text-navy-900 rounded-2xl rounded-tl-md px-4 py-2.5 max-w-[75%] mr-auto;
+  }
+
+  .btn-primary {
+    @apply bg-navy-900 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 
+           hover:bg-navy-800 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-navy-900/50 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-navy-900 border border-slate-200 px-6 py-3 rounded-xl font-medium transition-all duration-200
+           hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-sand-500/50 focus:ring-offset-2;
+  }
+
+  .btn-accent {
+    @apply bg-sand-500 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200
+           hover:bg-sand-600 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-sand-500/50 focus:ring-offset-2;
+  }
+
+  .input-field {
+    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-navy-900 placeholder-slate-400
+           focus:outline-none focus:ring-2 focus:ring-sand-500/50 focus:border-transparent transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-300;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-slate-200 rounded;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+}
