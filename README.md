@@ -1,154 +1,266 @@
-# AI Travel Agent - Premium Frontend UI
+# AI Travel Agent
 
-A modern, premium AI Travel Agent UI built with Next.js 14, React 18, and Tailwind CSS.
+A full-stack AI-powered travel planning application with a premium Next.js frontend and a FastAPI/LangGraph backend featuring real-time tools for weather, place search, expense calculation, and currency conversion.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        NEXT.JS FRONTEND (Port 3000)            │
+│  ┌─────────────┐  ┌─────────────────────────────────────────┐  │
+│  │ Onboarding  │  │ Dual-Panel Layout                       │  │
+│  │ Flow (3-step)│  │ ├─ Chat Interface (Left)              │  │
+│  └──────┬──────┘  │ │  • Message bubbles + Markdown         │  │
+│         │         │ │  • Typing indicator                   │  │
+│         ▼         │ │  • Sticky input                       │  │
+│  ┌─────────────┐  │ ├─ Plan Visualizer (Right)              │  │
+│  │  State Mgmt │  │ │  • Summary header                     │  │
+│  │ (React hooks)│  │ │  • Hotel carousel + Book actions     │  │
+│  └──────┬──────┘  │ │  • Expandable day timeline           │  │
+│         │         │ └─────────────────────────────────────────┘  │
+└─────────│───────────────────────────────────────────────────────┘
+          │ HTTP POST /query
+          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      FASTAPI BACKEND (Port 8000)               │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ POST /query → LangGraph Agent                           │   │
+│  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  │   │
+│  │  │ Agent Node  │───▶│ Tools Node  │───▶│ Agent Node  │  │   │
+│  │  │ (LLM + Tools)    │ (ToolNode)  │    │ (Finalize)  │  │   │
+│  │  └─────────────┘    └─────────────┘    └─────────────┘  │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                          │                                      │
+│         ┌────────────────┼────────────────┐                    │
+│         ▼                ▼                ▼                    │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐            │
+│  │ Weather     │  │ Place       │  │ Expense     │            │
+│  │ Tool        │  │ Search      │  │ Calculator  │            │
+│  └─────────────┘  └─────────────┘  └─────────────┘            │
+│         │                │                │                    │
+│         ▼                ▼                ▼                    │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ Currency Conversion Tool                                 │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ## Features
 
-- **Dual-Panel Layout**: Full-screen chat interface (left) + live plan visualizer (right) on desktop, collapses to tabbed view on mobile
-- **Interactive Onboarding Flow**: 3-step guided setup (Destination → Duration → Budget Tier)
-- **Immersive Chat Interface**: 
-  - Styled message bubbles (user: navy, AI: slate)
-  - Rich text rendering (bold, lists, tables)
-  - Animated typing indicator
-  - Sticky input with send button
-- **Dynamic Plan Visualizer**:
-  - Summary header with destination, duration, budget
-  - Horizontal scrolling hotel cards with "Book Now" actions
-  - Expandable day-by-day itinerary timeline
-  - Activity cards with time, cost, category icons
-- **Backend-Ready Architecture**:
-  - Clean separation of UI and data state
-  - Centralized frontend state object for API payload
-  - Empty async handler functions (`syncWithBackendAPI`, `sendChatMessage`) for easy API integration
-  - All data loops pull from structured local state
+### Frontend (Next.js 14 + TypeScript + Tailwind)
+- **Dual-Panel Layout**: Chat (left) + Plan Visualizer (right) on desktop, tabbed on mobile
+- **3-Step Onboarding**: Destination → Duration → Budget Tier (Economy/Mid-range/Luxury)
+- **Immersive Chat**: Navy user bubbles, slate AI bubbles, Markdown rendering, typing indicator
+- **Live Plan Visualizer**: Hotel carousel with "Book Now", expandable day-by-day timeline
+- **Responsive Design**: Clean navy/sand/slate/off-white palette
 
-## Color Palette
+### Backend (FastAPI + LangGraph + Groq/OpenAI)
+- **Agentic Workflow**: LangGraph StateGraph with conditional tool routing
+- **Real-time Tools**:
+  - Weather info (current + forecast)
+  - Place search (attractions, restaurants, hotels)
+  - Expense calculator (budget breakdowns)
+  - Currency conversion (real-time rates)
+- **LLM Providers**: Groq (default), OpenAI compatible
+- **CORS Enabled**: Ready for frontend integration
 
-- **Primary**: Deep Navy Blue `#0F172A`
-- **Accent**: Warm Sand `#F59E0B`
-- **Message Bubbles**: Soft Slate `#F1F5F9`
-- **Background**: Clean Off-White `#F8FAFC`
+## Tech Stack
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-
-### Installation
-
-```bash
-cd AI-Trip-planning-Agent-master
-npm install
-```
-
-### Development
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Production Build
-
-```bash
-npm run build
-npm start
-```
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 14, React 18, TypeScript, Tailwind CSS, Lucide React |
+| **Backend** | FastAPI, LangGraph, LangChain, Pydantic |
+| **LLM** | Groq (Llama 3), OpenAI compatible |
+| **Tools** | Weather API, Place Search, Calculator, Currency API |
+| **DevOps** | Docker-ready, GitHub Actions CI/CD compatible |
 
 ## Project Structure
 
 ```
-src/
-├── app/
-│   ├── globals.css          # Global styles + Tailwind directives
-│   ├── layout.tsx           # Root layout with font setup
-│   └── page.tsx             # Main page with state management
-├── components/
-│   ├── ChatInterface.tsx    # Left panel - messaging terminal
-│   ├── Header.tsx           # Top navigation with tab switching
-│   ├── MarkdownRenderer.tsx # Rich text rendering for AI messages
-│   ├── OnboardingFlow.tsx   # 3-step onboarding modal
-│   └── PlanVisualizer.tsx   # Right panel - live plan display
-├── lib/
-│   └── utils.ts             # Utilities, mock data, API handlers
-└── types/
-    └── index.ts             # TypeScript interfaces
+AI-Trip-planning-Agent/
+├── src/                          # Next.js Frontend
+│   ├── app/
+│   │   ├── globals.css           # Tailwind + custom styles
+│   │   ├── layout.tsx            # Root layout + Inter font
+│   │   └── page.tsx              # Main page + state management
+│   ├── components/
+│   │   ├── ChatInterface.tsx     # Messaging terminal
+│   │   ├── Header.tsx            # Navigation + tab switching
+│   │   ├── MarkdownRenderer.tsx  # Rich text (MD → HTML)
+│   │   ├── OnboardingFlow.tsx    # 3-step onboarding
+│   │   └── PlanVisualizer.tsx    # Hotels + itinerary display
+│   ├── lib/
+│   │   └── utils.ts              # API calls, formatters, types
+│   └── types/
+│       └── index.ts              # TypeScript interfaces
+│
+├── agent/                        # LangGraph Agent
+│   ├── __init__.py
+│   └── agentic_workflow.py       # GraphBuilder, agent_function
+│
+├── tools/                        # Real-time Tools
+│   ├── weather_man.py            # Weather info tool
+│   ├── place_finder.py           # Place search tool
+│   ├── expense_calculator_tool.py # Budget/expense tool
+│   └── currency_conversion_tool.py # Currency conversion
+│
+├── utils/                        # Backend Utilities
+│   ├── model_loader.py           # LLM loading (Groq/OpenAI)
+│   ├── weather_info.py           # Weather API client
+│   ├── place_info_search.py      # Place search client
+│   ├── calculator_util.py        # Expense calculations
+│   └── currency_convertor_util.py # Currency conversion
+│
+├── prompt_library/
+│   └── prompt.py                 # System prompt for travel agent
+│
+├── main.py                       # FastAPI app + /query endpoint
+├── start_server.py               # Uvicorn entry point
+├── app.py                        # Streamlit UI (alternative)
+├── requirements.txt              # Python dependencies
+├── package.json                  # Node dependencies
+└── README.md
 ```
 
-## Backend Integration
+## Getting Started
 
-The frontend is designed for easy backend integration. Key integration points:
+### Prerequisites
+- **Node.js 18+** & npm
+- **Python 3.10+** & pip
+- **Groq API Key** (free at https://console.groq.com) or OpenAI API Key
 
-### 1. Travel Plan Generation
-```typescript
-// src/lib/utils.ts
-export const syncWithBackendAPI = async (onboardingData: OnboardingData): Promise<TravelPlan> => {
-  // Replace with actual API call:
-  // const response = await fetch('/api/generate-plan', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(onboardingData),
-  // });
-  // return response.json();
-  
-  return createMockTravelPlan(onboardingData);
-};
+### Quick Start
+
+#### 1. Backend (Terminal 1)
+```bash
+cd AI-Trip-planning-Agent-master
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set environment variables
+cp .env.example .env  # Create .env with your keys
+# Edit .env: GROQ_API_KEY=your_key_here
+#            MODEL_PROVIDER=groq
+
+# Start FastAPI server
+python start_server.py
+# Runs on http://localhost:8000
+# API docs: http://localhost:8000/docs
 ```
 
-### 2. Chat Messages
-```typescript
-// src/lib/utils.ts
-export const sendChatMessage = async (message: string, travelPlan: TravelPlan | null): Promise<string> => {
-  // Replace with actual API call:
-  // const response = await fetch('/api/chat', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ message, travelPlan }),
-  // });
-  // return response.json();
-  
-  return `I've noted your request: "${message}". This would be processed by the AI backend.`;
-};
+#### 2. Frontend (Terminal 2)
+```bash
+cd AI-Trip-planning-Agent-master
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+# Runs on http://localhost:3000
 ```
 
-### 3. State Payload Structure
-The onboarding data is collected into a centralized `OnboardingData` object:
-```typescript
-interface OnboardingData {
-  destination: string;
-  duration: number;
-  budgetTier: 'economy' | 'mid-range' | 'luxury';
+#### 3. Use the App
+1. Open http://localhost:3000
+2. Complete 3-step onboarding (Destination, Days, Budget)
+3. View generated plan in Chat tab (full markdown) or Plan tab (structured view)
+4. Ask follow-up questions in chat to modify the plan
+
+### Environment Variables
+
+**Backend (`.env`):**
+```bash
+GROQ_API_KEY=your_groq_key_here
+# OR
+OPENAI_API_KEY=your_openai_key_here
+MODEL_PROVIDER=groq  # or openai
+```
+
+**Frontend (`.env.local`):**
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+## API Reference
+
+### POST `/query`
+Generate travel plan or handle chat messages.
+
+**Request:**
+```json
+{
+  "question": "Plan a 5-day trip to Tokyo with a mid-range budget..."
 }
 ```
 
-This maps directly to the backend API payload.
+**Response:**
+```json
+{
+  "answer": "# AI Travel Plan\n\n## Day 1...\n\n### Hotels...\n\n### Cost Breakdown...\n"
+}
+```
+
+### Health Check
+```bash
+GET /health  # Returns {"status": "ok"}
+```
 
 ## Customization
 
-### Colors
-Edit `tailwind.config.js` to customize the color palette:
+### Frontend Colors (`tailwind.config.js`)
 ```javascript
 colors: {
-  navy: { 900: '#0F172A', ... },
-  sand: { 500: '#F59E0B', ... },
-  slate: { 100: '#F1F5F9', ... },
-  offwhite: { 50: '#F8FAFC', ... },
+  navy: { 900: '#0F172A', 800: '#1E293B', 700: '#334155' },
+  sand: { 500: '#F59E0B', 400: '#FBBF24', 600: '#D97706' },
+  slate: { 100: '#F1F5F9', 200: '#E2E8F0' },
+  offwhite: { 50: '#F8FAFC' },
 }
 ```
 
-### Mock Data
-Modify `MOCK_HOTELS` and `MOCK_ITINERARY` in `src/lib/utils.ts` to change placeholder data.
+### Backend Tools
+Add new tools in `tools/` and register in `agent/agentic_workflow.py`:
+```python
+self.tools.extend([
+    *self.new_tool.new_tool_list,
+])
+```
 
-## Tech Stack
+### System Prompt (`prompt_library/prompt.py`)
+Modify the `SYSTEM_PROMPT` to change agent behavior, output format, or constraints.
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Utilities**: clsx, tailwind-merge
+## Deployment
+
+### Docker (Recommended)
+```dockerfile
+# Backend
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 8000
+CMD ["python", "start_server.py"]
+
+# Frontend
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json .
+RUN npm ci
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+### Environment-Specific
+- **Frontend**: Vercel, Netlify, AWS Amplify
+- **Backend**: Railway, Render, Fly.io, AWS ECS, Azure Container Apps
+- **Database**: Add PostgreSQL/MongoDB for persistence if needed
 
 ## License
 
